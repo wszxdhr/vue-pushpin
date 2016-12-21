@@ -51,7 +51,6 @@
     methods: {
       onScroll: function () {
         if (!this.advance) {
-          // document.documentElement.clientWidth
           if (this.$el.getBoundingClientRect().top < parseInt(this.position.top) || this.$el.getBoundingClientRect().left < parseInt(this.position.left) || (document.documentElement.clientWidth - this.$el.getBoundingClientRect().right) < parseInt(this.position.right) || (document.documentElement.clientHeight - this.$el.getBoundingClientRect().bottom) < parseInt(this.position.bottom)) {
             this.isFixed = true
           } else {
@@ -68,9 +67,9 @@
       } else if (this.scrollElement === 'window') {
         this.scrollNode = window
       } else if (this.scrollElement === 'null') { // 自动判断节点overflow来决定挂载哪个节点
-        console.log(this.$el.parentNode.style['overflow-y'])
-        console.log(document.documentElement.style['overflow-y'])
-        if (this.$el.parentNode.style['overflow-y'] === 'scroll') {
+        console.log(this.$el.parentNode.style['overflow'])
+        console.log(document.documentElement.style['overflow'])
+        if (this.$el.parentNode.style['overflow'] === 'scroll') {
           this.scrollNode = this.$el.parentNode
         } else {
           this.scrollNode = document
@@ -80,7 +79,13 @@
       } else {
         this.scrollNode = document.querySelector(this.scrollElement)
       }
-      this.scrollNode.addEventListener('scroll', this.onScroll)
+      this.scrollNode.addEventListener('scroll', this.onScroll) // 绑定滚动事件
+      // 初始化时检测是否已经可以浮动
+      if (this.$el.getBoundingClientRect().top < parseInt(this.position.top) || this.$el.getBoundingClientRect().left < parseInt(this.position.left) || (document.documentElement.clientWidth - this.$el.getBoundingClientRect().right) < parseInt(this.position.right) || (document.documentElement.clientHeight - this.$el.getBoundingClientRect().bottom) < parseInt(this.position.bottom)) {
+        this.isFixed = true
+      } else {
+        this.isFixed = false
+      }
     },
     watch: {
       isFixed: function (val) {
