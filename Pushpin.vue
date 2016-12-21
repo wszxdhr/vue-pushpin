@@ -2,6 +2,8 @@
 @prop position 停靠的位置 JSON 默认：{top: 0, left: 0}
 @prop scrollElement 监听滚动的元素 String 默认：document
 @prop advance 激进策略，采用position: sticky; Boolean 默认：false
+@prop onFixed isFixed=true时触发的钩子函数，此事件对advance=true时无效, 函数参数（{position: Object, clientRect: Object}）
+@prop onFixDisabled isFixed=false时触发的钩子函数，此事件对advance=true时无效, 函数参数（{position: Object, clientRect: Object}）
 @slot inner 填入图钉的内容 默认：空
 -->
 <template>
@@ -36,7 +38,9 @@
         advance: {
           type: Boolean,
           default: false
-        }
+        },
+        onFixed: Function,
+        onFixDisabled: Function
     },
     data () {
       return {
@@ -92,9 +96,17 @@
         if (val) {
           this.placeholderStyle.height = this.$el.getElementsByClassName('lm-pushpin-inner')[0].clientHeight + 'px'
           this.placeholderStyle.width = this.$el.getElementsByClassName('lm-pushpin-inner')[0].clientWidth + 'px'
+          // isFixed = true 时触发
+          if (this.onFixed !== undefined) {
+            this.onFixed(this.position, this.$el.getBoundingClientRect())
+          }
         } else {
           this.placeholderStyle.height = '0'
           this.placeholderStyle.width = '0'
+          // isFixed = false 时触发
+          if (this.onFixDisabled !== undefined) {
+            this.onFixDisabled(this.position, this.$el.getBoundingClientRect())
+          }
         }
       }
     },
